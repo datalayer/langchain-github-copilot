@@ -58,7 +58,8 @@ def setup():
         if access_token:
             break
         
-    os.environ['GITHUB_TOKEN'] = access_token
+    with open('.env', 'a') as f:
+        f.write(f'GITHUB_TOKEN={access_token}\n')
 
     print('Authentication success!')
 ```

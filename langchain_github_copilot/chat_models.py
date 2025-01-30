@@ -101,7 +101,7 @@ class ChatGithubCopilot(BaseChatModel):
 
     """  # noqa: E501
 
-    model_name: str = Field(alias="model")
+    model_name: str = Field("github-copilot", alias="model")
     """The name of the model"""
     temperature: Optional[float] = 0
     max_tokens: Optional[int] = None
