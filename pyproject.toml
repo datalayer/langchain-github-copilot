@@ -4,19 +4,18 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "langchain-github-copilot"
-version = "0.1.0"
-description = "An integration package connecting GithubCopilot and LangChain"
+version = "0.2.0"
+description = "An integration package connecting GitHub Copilot and LangChain"
 authors = []
 readme = "README.md"
-repository = "https://github.com/langchain-ai/langchain"
+repository = "https://github.com/datalayer/langchain-github-copilot"
 license = "MIT"
 
 [tool.mypy]
 disallow_untyped_defs = "True"
 
 [tool.poetry.urls]
-"Source Code" = "https://github.com/langchain-ai/langchain/tree/master/libs/partners/github-copilot"
-"Release Notes" = "https://github.com/langchain-ai/langchain/releases?q=tag%3A%22github-copilot%3D%3D0%22&expanded=true"
+"Source Code" = "https://github.com/datalayer/langchain-github-copilot"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
