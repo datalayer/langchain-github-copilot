@@ -732,73 +732,6 @@ class BaseChatOpenAI(BaseChatModel):
 
         return ChatResult(generations=generations, llm_output=llm_output)
 
-    async def _astream(
-        self,
-        messages: List[BaseMessage],
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
-        **kwargs: Any,
-    ) -> AsyncIterator[ChatGenerationChunk]:
-        kwargs["stream"] = True
-        payload = self._get_request_payload(messages, stop=stop, **kwargs)
-        default_chunk_class: Type[BaseMessageChunk] = AIMessageChunk
-        base_generation_info = {}
-        if self.include_response_headers:
-            raw_response = await self.async_client.with_raw_response.create(**payload)
-            response = raw_response.parse()
-            base_generation_info = {"headers": dict(raw_response.headers)}
-        else:
-            response = await self.async_client.create(**payload)
-        async with response:
-            is_first_chunk = True
-            async for chunk in response:
-                if not isinstance(chunk, dict):
-                    chunk = chunk.model_dump()
-                generation_chunk = _convert_chunk_to_generation_chunk(
-                    chunk,
-                    default_chunk_class,
-                    base_generation_info if is_first_chunk else {},
-                )
-                if generation_chunk is None:
-                    continue
-                default_chunk_class = generation_chunk.message.__class__
-                logprobs = (generation_chunk.generation_info or {}).get("logprobs")
-                if run_manager:
-                    await run_manager.on_llm_new_token(
-                        generation_chunk.text, chunk=generation_chunk, logprobs=logprobs
-                    )
-                is_first_chunk = False
-                yield generation_chunk
-
-    async def _agenerate(
-        self,
-        messages: List[BaseMessage],
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
-        **kwargs: Any,
-    ) -> ChatResult:
-        payload = self._get_request_payload(messages, stop=stop, **kwargs)
-        generation_info = None
-        if "response_format" in payload:
-            if self.include_response_headers:
-                warnings.warn(
-                    "Cannot currently include response headers when response_format is "
-                    "specified."
-                )
-            payload.pop("stream")
-            response = await self.root_async_client.beta.chat.completions.parse(
-                **payload
-            )
-        elif self.include_response_headers:
-            raw_response = await self.async_client.with_raw_response.create(**payload)
-            response = raw_response.parse()
-            generation_info = {"headers": dict(raw_response.headers)}
-        else:
-            response = await self.async_client.create(**payload)
-        return await run_in_executor(
-            None, self._create_chat_result, response, generation_info
-        )
-
     @property
     def _identifying_params(self) -> Dict[str, Any]:
         """Get the identifying parameters."""
@@ -2011,33 +1944,6 @@ class ChatOpenAI(BaseChatOpenAI):  # type: ignore[override]
             if isinstance(source, bool):
                 return source
         return self.stream_usage
-
-    def _stream(
-        self, *args: Any, stream_usage: Optional[bool] = None, **kwargs: Any
-    ) -> Iterator[ChatGenerationChunk]:
-        """Set default stream_options."""
-        stream_usage = self._should_stream_usage(stream_usage, **kwargs)
-        # Note: stream_options is not a valid parameter for Azure OpenAI.
-        # To support users proxying Azure through ChatOpenAI, here we only specify
-        # stream_options if include_usage is set to True.
-        # See https://learn.microsoft.com/en-us/azure/ai-services/openai/whats-new
-        # for release notes.
-        if stream_usage:
-            kwargs["stream_options"] = {"include_usage": stream_usage}
-
-        return super()._stream(*args, **kwargs)
-
-    async def _astream(
-        self, *args: Any, stream_usage: Optional[bool] = None, **kwargs: Any
-    ) -> AsyncIterator[ChatGenerationChunk]:
-        """Set default stream_options."""
-        stream_usage = self._should_stream_usage(stream_usage, **kwargs)
-        if stream_usage:
-            kwargs["stream_options"] = {"include_usage": stream_usage}
-
-        async for chunk in super()._astream(*args, **kwargs):
-            yield chunk
-
 
 def _is_pydantic_class(obj: Any) -> bool:
     return isinstance(obj, type) and is_basemodel_subclass(obj)
