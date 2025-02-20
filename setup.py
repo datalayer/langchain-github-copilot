@@ -1,48 +1,62 @@
-import requests, os, time
+import requests
+import time
+
+GITHUB_CLIENT_ID = "Iv1.b507a08c87ecfe98"
+HEADERS = {
+    'accept': 'application/json',
+    'editor-version': 'Neovim/0.6.1',
+    'editor-plugin-version': 'copilot.vim/1.16.0',
+    'content-type': 'application/json',
+    'user-agent': 'GithubCopilot/1.155.0',
+    'accept-encoding': 'gzip,deflate,br'
+}
 
 def setup():
-    resp = requests.post('https://github.com/login/device/code', headers={
-            'accept': 'application/json',
-            'editor-version': 'Neovim/0.6.1',
-            'editor-plugin-version': 'copilot.vim/1.16.0',
-            'content-type': 'application/json',
-            'user-agent': 'GithubCopilot/1.155.0',
-            'accept-encoding': 'gzip,deflate,br'
-        }, data='{"client_id":"Iv1.b507a08c87ecfe98","scope":"read:user"}')
+    access_token = get_access_token()
+    token = get_token(access_token)
+    
+    with open('.env', 'a') as f:
+        f.write(f'\nGITHUB_TOKEN="{token}"\n')
 
+    print('Authentication success!')
 
-    # Parse the response json, isolating the device_code, user_code, and verification_uri
-    resp_json = resp.json()
-    device_code = resp_json.get('device_code')
-    user_code = resp_json.get('user_code')
-    verification_uri = resp_json.get('verification_uri')
+def get_token(access_token):
+    response = requests.get(
+        'https://api.github.com/copilot_internal/v2/token',
+        headers={**HEADERS, 'authorization': f'token {access_token}'}
+    )
+    response.raise_for_status()
+    return response.json().get('token')
 
-    # Print the user code and verification uri
+def get_access_token():
+    response = requests.post(
+        'https://github.com/login/device/code',
+        headers=HEADERS,
+        json={'client_id': GITHUB_CLIENT_ID, 'scope': 'read:user'}
+    )
+    response.raise_for_status()
+    data = response.json()
+    device_code = data.get('device_code')
+    user_code = data.get('user_code')
+    verification_uri = data.get('verification_uri')
+
     print(f'Please visit {verification_uri} and enter code {user_code} to authenticate.')
-
 
     while True:
         time.sleep(5)
-        resp = requests.post('https://github.com/login/oauth/access_token', headers={
-            'accept': 'application/json',
-            'editor-version': 'Neovim/0.6.1',
-            'editor-plugin-version': 'copilot.vim/1.16.0',
-            'content-type': 'application/json',
-            'user-agent': 'GithubCopilot/1.155.0',
-            'accept-encoding': 'gzip,deflate,br'
-            }, data=f'{{"client_id":"Iv1.b507a08c87ecfe98","device_code":"{device_code}","grant_type":"urn:ietf:params:oauth:grant-type:device_code"}}')
-
-        # Parse the response json, isolating the access_token
-        resp_json = resp.json()
-        access_token = resp_json.get('access_token')
-
+        response = requests.post(
+            'https://github.com/login/oauth/access_token',
+            headers=HEADERS,
+            json={
+                'client_id': GITHUB_CLIENT_ID,
+                'device_code': device_code,
+                'grant_type': 'urn:ietf:params:oauth:grant-type:device_code'
+            }
+        )
+        response.raise_for_status()
+        access_token = response.json().get('access_token')
         if access_token:
-            break
-        
-    with open('.env', 'a') as f:
-        f.write(f'GITHUB_TOKEN={access_token}\n')
+            return access_token
 
-    print('Authentication success!')
-    
 if __name__ == '__main__':
     setup()
