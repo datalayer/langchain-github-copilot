@@ -16,9 +16,17 @@ And you should configure credentials by setting the following environment variab
 <summary>How to get a Github Token?</summary>
 Run the setup.py python script to create a .env file with the Github Token.
 
+> [!IMPORTANT]  
+> The Github Token generated expires after 25 minutes. We are currently working on a solution to refresh the token automatically. If needed, rerun the setup.py script to generate a new token.
+
 ```bash
 python setup.py
 ```
+
+Ressources used to understand how to generate a Github Token:
+- https://github.com/B00TK1D/copilot-api
+- https://thakkarparth007.github.io/copilot-explorer/posts/copilot-internals.html
+
 </details>
 
 ## Chat Models
