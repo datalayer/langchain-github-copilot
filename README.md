@@ -14,9 +14,12 @@ And you should configure credentials by setting the following environment variab
 
 <details>
 <summary>How to get a Github Token?</summary>
+
 Run the setup.py python script to create a .env file with the Github Token.
 
-> [!IMPORTANT]  
+
+> IMPORTANT
+>  
 > The Github Token generated expires after 25 minutes. We are currently working on a solution to refresh the token automatically. If needed, rerun the setup.py script to generate a new token.
 
 ```bash
