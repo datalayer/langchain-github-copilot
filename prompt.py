@@ -12,4 +12,3 @@ print(response)
 
 # print(response["content"])
 # print(response["response_metadata"])
-
