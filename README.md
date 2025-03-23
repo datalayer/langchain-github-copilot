@@ -32,10 +32,10 @@ Run the `setup.py` python script to create a `.env` file with the GitHub Token.
 
 > IMPORTANT
 >  
-> The GitHub Token generated expires after 25 minutes. We are currently working on a solution to refresh the token automatically. If needed, rerun the setup.py script to generate a new token.
+> The GitHub Token generated expires after 25 minutes. We are working on a solution to refresh the token automatically. If needed, rerun the setup.py script to generate a new token.
 
 ```bash
-python setup.py
+python authenticate.py
 ```
 
 Ressources used to understand how to generate a GitHub Token:
