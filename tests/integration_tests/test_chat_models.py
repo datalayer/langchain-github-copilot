@@ -1,16 +1,20 @@
-"""Test ChatGithubCopilot chat model."""
+# Copyright (c) 2024-2025 Datalayer, Inc.
+#
+# MIT License
+
+"""Test ChatGitHubCopilot chat model."""
 
 from typing import Type
 
 from langchain_tests.integration_tests import ChatModelIntegrationTests
 
-from langchain_github_copilot.chat_models import ChatGithubCopilot
+from langchain_github_copilot.chat_models import ChatGitHubCopilot
 
 
-class TestChatGithubCopilotIntegration(ChatModelIntegrationTests):
+class TestChatGitHubCopilotIntegration(ChatModelIntegrationTests):
     @property
-    def chat_model_class(self) -> Type[ChatGithubCopilot]:
-        return ChatGithubCopilot
+    def chat_model_class(self) -> Type[ChatGitHubCopilot]:
+        return ChatGitHubCopilot
 
     @property
     def chat_model_params(self) -> dict:

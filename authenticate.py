@@ -1,24 +1,33 @@
+# Copyright (c) 2024-2025 Datalayer, Inc.
+#
+# MIT License
+ 
 import requests
 import time
 
+
 GITHUB_CLIENT_ID = "Iv1.b507a08c87ecfe98"
+
+
 HEADERS = {
     'accept': 'application/json',
     'editor-version': 'Neovim/0.6.1',
     'editor-plugin-version': 'copilot.vim/1.16.0',
     'content-type': 'application/json',
-    'user-agent': 'GithubCopilot/1.155.0',
+    'user-agent': 'GitHubCopilot/1.155.0',
     'accept-encoding': 'gzip,deflate,br'
 }
 
-def setup():
+
+def authenticate():
+    print()
     access_token = get_access_token()
     token = get_token(access_token)
-    
     with open('.env', 'a') as f:
         f.write(f'\nGITHUB_TOKEN="{token}"\n')
+    print()
+    print('Successfull authentication with GitHub!')
 
-    print('Authentication success!')
 
 def get_token(access_token):
     response = requests.get(
@@ -27,6 +36,7 @@ def get_token(access_token):
     )
     response.raise_for_status()
     return response.json().get('token')
+
 
 def get_access_token():
     response = requests.post(
@@ -39,9 +49,7 @@ def get_access_token():
     device_code = data.get('device_code')
     user_code = data.get('user_code')
     verification_uri = data.get('verification_uri')
-
     print(f'Please visit {verification_uri} and enter code {user_code} to authenticate.')
-
     while True:
         time.sleep(5)
         response = requests.post(
@@ -58,5 +66,6 @@ def get_access_token():
         if access_token:
             return access_token
 
+
 if __name__ == '__main__':
-    setup()
+    authenticate()

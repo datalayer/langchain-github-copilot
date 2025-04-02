@@ -1,8 +1,12 @@
+# Copyright (c) 2024-2025 Datalayer, Inc.
+#
+# MIT License
+
 """
 OpenAI chat wrapper.
 
-This was taken from https://github.com/langchain-ai/langchain/blob/master/libs/partners/openai/langchain_openai/chat_models/base.py
-with modification to request the GithubCopilot API instead of the OpenAI API.
+Note: This was taken from https://github.com/langchain-ai/langchain/blob/master/libs/partners/openai/langchain_openai/chat_models/base.py
+with modification to request the GitHubCopilot API instead of the OpenAI API.
 """
 
 from __future__ import annotations
@@ -19,10 +23,8 @@ from math import ceil
 from operator import itemgetter
 from typing import (
     Any,
-    AsyncIterator,
     Callable,
     Dict,
-    Iterator,
     List,
     Literal,
     Mapping,
@@ -97,6 +99,7 @@ from langchain_core.utils.pydantic import (
 from langchain_core.utils.utils import _build_model_kwargs, from_env, secret_from_env
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, model_validator
 from typing_extensions import Self
+
 
 logger = logging.getLogger(__name__)
 
@@ -1900,7 +1903,7 @@ class ChatOpenAI(BaseChatOpenAI):  # type: ignore[override]
 
     @classmethod
     def is_lc_serializable(cls) -> bool:
-        """Return whether this model can be serialized by Langchain."""
+        """Return whether this model can be serialized by LangChain."""
         return True
 
     @property

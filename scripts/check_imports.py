@@ -1,5 +1,10 @@
+# Copyright (c) 2024-2025 Datalayer, Inc.
+#
+# MIT License
+
 import sys
 import traceback
+
 from importlib.machinery import SourceFileLoader
 
 if __name__ == "__main__":

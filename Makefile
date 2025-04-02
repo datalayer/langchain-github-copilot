@@ -50,6 +50,19 @@ spell_fix:
 check_imports: $(shell find langchain_github_copilot -name '*.py')
 	poetry run python ./scripts/check_imports.py $^
 
+
+######################
+# 
+######################
+
+publish-pypi: # publish the pypi package
+	git clean -fdx && \
+		python -m build
+	@exec echo
+	@exec echo twine upload ./dist/*-py3-none-any.whl
+	@exec echo
+	@exec echo https://pypi.org/project/langchina-github-copilot/#history
+
 ######################
 # HELP
 ######################
