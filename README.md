@@ -28,7 +28,7 @@ You should configure credentials by setting the `GITHUB_TOKEN` environment varia
 <details>
 <summary>How to get a GitHub Token?</summary>
 
-Run the `setup.py` python script to create a `.env` file with the GitHub Token.
+Run the `authenticate.py` python script to create a `.env` file with the GitHub Token.
 
 > IMPORTANT
 >  
